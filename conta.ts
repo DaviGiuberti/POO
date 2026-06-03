@@ -1,4 +1,5 @@
 import { ItemDigital } from "./ItemDigital";
+import { DLC } from "./jogo";
 
 export class Conta {
     private biblioteca: ItemDigital[] = [];
@@ -10,7 +11,22 @@ export class Conta {
         private email: string,
         private saldoCarteira: number
     ) {}
+
+    public getID(): string {
+        return this.id;
+    }
+
+
     public comprarItens(item: ItemDigital): void {
+        if (item instanceof DLC) {
+            const possuiJogoBase = this.biblioteca.some(
+                (jogoSalvo) => jogoSalvo.getID() === item.getIdJogoPrincipal()
+            );
+
+            if(!possuiJogoBase) {
+                throw new Error(`Compra bloqueada! Você precisa tem o jogo base para adquirir a DLC: ${item.getTitulo}.`)
+            }
+        }
         const valor = item.calcularPrecoFinal();
 
         if (this.saldoCarteira < valor) {
@@ -19,7 +35,7 @@ export class Conta {
     
     this.saldoCarteira -= valor;
     this.biblioteca.push(item);
-    this.historicoTransacoes.push(`Comprou ${item.getTitulo()} por R$${valor.toFixed(2)} en ${new Date().toLocaleDateString()}`);
+    this.historicoTransacoes.push(`Comprou ${item.getTitulo()} por R$${valor.toFixed(2)} em ${new Date().toLocaleDateString()}`);
     }
 
     public getBiblioteca(): ItemDigital[] {

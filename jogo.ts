@@ -21,6 +21,9 @@ export class DLC extends ItemDigital {
     constructor(id: string, titulo: string, precoBase: number, private idJogoPrincipal: string) {
         super(id, titulo, precoBase);
  }
+ public getIdJogoPrincipal(): string {
+    return this.idJogoPrincipal;
+ }
     public calcularPrecoFinal(): number {
         return this.precoBase * 0.0;
     }
