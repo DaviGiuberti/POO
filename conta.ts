@@ -53,7 +53,15 @@ export class Conta {
     this.saldoCarteira += valor;
   } // Fecha o adicionarSaldo alinhado com o seu respectivo 'public'
 
-  public getBiblioteca(): ItemDigital[] {
+public getBiblioteca(): ItemDigital[] {
     return this.biblioteca;
+  }
+
+  public getSaldo(): number {
+    return this.saldoCarteira;
+  }
+
+  public getHistorico(): string[] {
+    return this.historicoTransacoes;
   }
 }
