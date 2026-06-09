@@ -1,8 +1,9 @@
-import { ItemDigital } from './ItemDigital';
-import { DLC } from './jogo';
+import { ItemDigital } from './ItemDigital.js';
+import { DLC } from './jogo.js';
+import { RegistroCompra, PoliticaReembolso } from './PoliticaReembolso.js'; // Corrigido o './'
 
 export class Conta {
-  private biblioteca: ItemDigital[] = [];
+  private biblioteca: RegistroCompra[] = [];
   private historicoTransacoes: string[] = [];
 
   constructor(
@@ -17,13 +18,17 @@ export class Conta {
   }
 
   public comprarItens(item: ItemDigital): void {
+    const jaPossui = this.biblioteca.some(c => c.item.getID() === item.getID());
+    if (jaPossui) {
+      throw new Error(`Você já possui o item '${item.getTitulo()}' na sua biblioteca!`);
+    }
+    
     if (item instanceof DLC) {
       const possuiJogoBase = this.biblioteca.some(
-        (jogoSalvo) => jogoSalvo.getID() === item.getIdJogoPrincipal(),
+        (compraSalva) => compraSalva.item.getID() === item.getIdJogoPrincipal(),
       );
 
       if (!possuiJogoBase) {
-        // Adicionado os () em getTitulo()
         throw new Error(
           `Compra bloqueada! Você precisa ter o jogo base para adquirir a DLC: ${item.getTitulo()}.`,
         );
@@ -36,25 +41,45 @@ export class Conta {
       throw new Error('Saldo insuficiente na carteira Steam!');
     }
 
-    // Corrigido aqui: Essas 3 linhas pertencem ao bloco do comprarItens,
-    // então elas precisam ficar alinhadas para dentro (8 espaços da margem)
     this.saldoCarteira -= valor;
-    this.biblioteca.push(item);
+    // Corrigido: Agora guarda apenas o registro estruturado com a data de compra
+    this.biblioteca.push({ item, dataCompra: new Date() });
+    
     this.historicoTransacoes.push(
       `Comprou ${item.getTitulo()} por R$${valor.toFixed(2)} em ${new Date().toLocaleDateString()}`,
     );
-  } // Fecha o comprarItens alinhado com o 'public' lá de cima
+  }
+
+  public reembolsarItem(idItem: string): void {
+    const indexCompra = this.biblioteca.findIndex(c => c.item.getID() === idItem);
+    if (indexCompra === -1) {
+      throw new Error("Este item não foi encontrado na sua biblioteca.");
+    }
+
+    const compra = this.biblioteca[indexCompra];
+
+    // 🔥 Adicionado de volta: Aplica a nossa regra de negócio de 7 dias!
+    PoliticaReembolso.validarElegibilidade(compra);
+
+    const valorEstorno = compra.item.calcularPrecoFinal();
+    this.saldoCarteira += valorEstorno;
+
+    this.biblioteca.splice(indexCompra, 1);
+
+    // Corrigido para toFixed() com F maiúsculo e fechamento da string
+    this.historicoTransacoes.push(`Reembolsou ${compra.item.getTitulo()} (+R$${valorEstorno.toFixed(2)}) em ${new Date().toLocaleDateString()}`);
+  }
 
   public adicionarSaldo(valor: number): void {
     if (valor <= 0) {
       throw new Error('O valor do depósito deve ser maior que zero.');
     }
-    // Corrigido aqui: Esta linha está dentro do método, vai para a direita
     this.saldoCarteira += valor;
-  } // Fecha o adicionarSaldo alinhado com o seu respectivo 'public'
+  } 
 
-public getBiblioteca(): ItemDigital[] {
-    return this.biblioteca;
+  // Corrigido: Desempacota os registros para retornar os jogos puros para o index.ts
+  public getBiblioteca(): ItemDigital[] {
+    return this.biblioteca.map(c => c.item);
   }
 
   public getSaldo(): number {

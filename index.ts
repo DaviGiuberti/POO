@@ -23,7 +23,8 @@ while (rodando) {
     console.log("2. Ver minha biblioteca\n");
     console.log("3. Adicionar saldo na carteira\n");
     console.log("4. Comprar um jogo ou DLC\n");
-    console.log("5. Sair\n");
+    console.log("5. Solicitar Reembolso\n");
+    console.log("6. Sair\n");
 
     const opcao = readline.question("Escolha uma opcao: ");
 
@@ -89,7 +90,37 @@ while (rodando) {
             break;
         }
 
-        case "5": { 
+        case "5": {
+            console.log("\n ======== SOLICITAR REEMBOLSO ========");
+            const biblioteca = minhaConta.getBiblioteca();
+
+            if (biblioteca.length === 0) {
+                console.log("Você nao tem nenhum jogo ou DLC na biblioteca para devolver.");
+            } else {
+                console.log("Seus jogos comprados: ");
+                biblioteca.forEach(jogo => {
+                    console.log(`- [ID: ${jogo.getID}] ${jogo.getTitulo()}`);
+                });
+
+                const idParaReembolso = readline.question("\nDigite o ID do item que deseja devolver (ou Enter para voltar): ");
+
+                if (idParaReembolso.trim() === "") {
+                    console.log("\nVoltou ao menu principal.");
+                } else {
+                    try {
+                        minhaConta.reembolsarItem(idParaReembolso);
+                        console.log("\n Reembolso aprovado! O valor integral foi estornado para o seu saldo");
+                        console.log(`Novo saldo da carteira: R$ ${minhaConta.getSaldo().toFixed(2)}`);
+
+                    } catch (error: any) {
+                        console.log(`\n Falha no reembolso: ${error.message}`);
+                    }
+                }
+            }
+            break;
+        }
+
+        case "6": { 
             console.log("\nSaindo do simulador... Até a próxima! 👋");
             rodando = false;
             break;
