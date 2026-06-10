@@ -1,7 +1,7 @@
 import * as readline from 'readline-sync';
-import { Jogo, DLC } from './jogo.js';
-import { ItemDigital } from './ItemDigital.js';
-import { RepositorioEmMemoria } from './RepositorioEmMemoria.js';
+import { Jogo, DLC } from '../models/jogo.js';
+import { ItemDigital } from '../models/ItemDigital.js';
+import { RepositorioEmMemoria } from '../repo/RepositorioEmMemoria.js';
 
 export class LojaView {
   // Transforma a listagem por tópicos em um método isolado

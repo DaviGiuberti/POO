@@ -1,6 +1,6 @@
 import { ItemDigital } from './ItemDigital.js';
 import { DLC } from './jogo.js';
-import { RegistroCompra, PoliticaReembolso } from './PoliticaReembolso.js'; // Corrigido o './'
+import { RegistroCompra, PoliticaReembolso } from '../services/PoliticaReembolso.js'; // Corrigido o './'
 
 export class Conta {
   private biblioteca: RegistroCompra[] = [];

@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "5.0",
-    "target": "es2020",
-    "module": "commonjs",
+    "types": ["node"], 
+    "moduleResolution": "node16",
+    "module": "node16", // 👈 Alterado aqui de commonjs para node16
+    "outDir": "./dist",
+    "target": "ES2022",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

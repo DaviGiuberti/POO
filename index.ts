@@ -1,18 +1,29 @@
 import * as readline from 'readline-sync';
-import { popularLojaDeTestes } from "./jogo.js";
-import { Conta } from "./conta.js";
-import { RepositorioEmMemoria } from "./RepositorioEmMemoria.js";
-import { ItemDigital } from "./ItemDigital.js";
-import { LojaView } from "./lojaView.js"; // <-- Nossa nova View importada aqui
+import { popularLojaDeTestes } from "./src/models/jogo.js";
+import { Conta } from "./src/models/conta.js";
+import { RepositorioEmMemoria } from "./src/repo/RepositorioEmMemoria.js";
+import { RepositorioContaJSON } from "./src/repo/repositorioJSON.js";
+import { ItemDigital } from "./src/models/ItemDigital.js";
+import { LojaView } from "./src/views/lojaView.js"; 
 
 const repoJogos = new RepositorioEmMemoria<ItemDigital>();
-const repoContas = new RepositorioEmMemoria<Conta>();
+popularLojaDeTestes(repoJogos);
+
+const repoContas = new RepositorioContaJSON();
 
 console.log(" ======== INICIALIZANDO SIMULADOR STEAM ========\n");
 popularLojaDeTestes(repoJogos);
 
-const minhaConta = new Conta("u1", "PauloCrot", "pauloramoscrot1@gmail.com", 250.00);
-repoContas.adicionar(minhaConta);
+
+let minhaConta = repoContas.buscarPorId("u1");
+
+if (!minhaConta) {
+    console.log("📝 Nenhum perfil encontrado. Criando novo save de usuário...");
+    minhaConta = new Conta("u1", "PauloCrot", "pauloramoscrot1@gmail.com", 250.00);
+    repoContas.adicionar(minhaConta);
+} else {
+    console.log(`💾 Perfil carregado com sucesso! Bem-vindo de volta, ${minhaConta.getID()}.`);
+}
 
 let rodando = true;
 console.log(" ======== BEM VINDO À STEAM ======== ");
@@ -81,6 +92,7 @@ while (rodando) {
                         try {
                             minhaConta.comprarItens(itemDesejado);
                             console.log(`\n✅ Sucesso! '${itemDesejado.getTitulo()}' adicionado à sua biblioteca.`);
+                            repoContas.adicionar(minhaConta);
                         } catch (error: any) {
                             console.log(`\n🔥 Erro na compra: ${error.message}`);
                         }
@@ -99,7 +111,7 @@ while (rodando) {
             } else {
                 console.log("Seus jogos comprados: ");
                 biblioteca.forEach(jogo => {
-                    console.log(`- [ID: ${jogo.getID}] ${jogo.getTitulo()}`);
+                    console.log(`- [ID: ${jogo.getID()}] ${jogo.getTitulo()}`);
                 });
 
                 const idParaReembolso = readline.question("\nDigite o ID do item que deseja devolver (ou Enter para voltar): ");

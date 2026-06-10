@@ -1,0 +1,23 @@
+[
+  {
+    "id": "u1",
+    "nomeUsuario": "PauloCrot",
+    "email": "pauloramoscrot1@gmail.com",
+    "saldoCarteira": 170,
+    "biblioteca": [
+      {
+        "item": {
+          "id": "MA-01",
+          "titulo": "Grand Theft Auto V",
+          "precoBase": 80,
+          "genero": "Mundo Aberto",
+          "dlcs": []
+        },
+        "dataCompra": "2026-06-10T22:14:47.276Z"
+      }
+    ],
+    "historicoTransacoes": [
+      "Comprou Grand Theft Auto V por R$80.00 em 10/06/2026"
+    ]
+  }
+]

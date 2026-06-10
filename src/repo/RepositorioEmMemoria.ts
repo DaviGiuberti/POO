@@ -15,12 +15,4 @@ export class RepositorioEmMemoria<T extends { getID(): string }> implements IRep
         return [...this.dados];
     }
 
-    public deletar(id: string): boolean {
-        const index = this.dados.findIndex(item => item.getID() === id);
-        if (index !== -1) {
-            this.dados.splice(index, 1);
-            return true;
-        }
-        return false;
-    }
 }

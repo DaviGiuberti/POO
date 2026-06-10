@@ -1,5 +1,5 @@
 import { ItemDigital } from "./ItemDigital.js";
-import { RepositorioEmMemoria } from "./RepositorioEmMemoria.js";
+import { RepositorioEmMemoria } from "../repo/RepositorioEmMemoria.js";
 
 export class Jogo extends ItemDigital {
     private dlcs: DLC[] = [];

@@ -1,4 +1,4 @@
-import {ItemDigital} from "./ItemDigital.js"
+import {ItemDigital} from "../models/ItemDigital.js"
 
 export interface RegistroCompra {
     item: ItemDigital; 
