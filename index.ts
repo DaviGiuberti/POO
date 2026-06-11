@@ -5,15 +5,16 @@ import { RepositorioEmMemoria } from "./src/repo/RepositorioEmMemoria.js";
 import { RepositorioContaJSON } from "./src/repo/repositorioJSON.js";
 import { ItemDigital } from "./src/models/ItemDigital.js";
 import { LojaView } from "./src/views/lojaView.js"; 
+import { DescontoPorCategoria, DescontoPercentual } from "./src/services/promocao.js";
 
 const repoJogos = new RepositorioEmMemoria<ItemDigital>();
-popularLojaDeTestes(repoJogos);
-
 const repoContas = new RepositorioContaJSON();
 
-console.log(" ======== INICIALIZANDO SIMULADOR STEAM ========\n");
-popularLojaDeTestes(repoJogos);
+// Configurando as promoções
+const promocaoAtiva = new DescontoPorCategoria("PROMOÇÃO DE INVERNO: ESPECIAL MUNDO ABERTO", 50, "Mundo Aberto");
 
+console.log(" ======== INICIALIZANDO SIMULADOR STEAM ========\n");
+popularLojaDeTestes(repoJogos); // Mantido apenas uma vez para não duplicar os jogos
 
 let minhaConta = repoContas.buscarPorId("u1");
 
@@ -24,6 +25,9 @@ if (!minhaConta) {
 } else {
     console.log(`💾 Perfil carregado com sucesso! Bem-vindo de volta, ${minhaConta.getID()}.`);
 }
+
+// O aviso do evento ativo fica melhor aqui dentro do fluxo principal, logo antes do loop começar!
+console.log(`\nEVENTO ATIVO: ${promocaoAtiva.getNome()}!`);
 
 let rodando = true;
 console.log(" ======== BEM VINDO À STEAM ======== ");
@@ -66,7 +70,7 @@ while (rodando) {
                 console.log("Valor inválido!");
             } else {
                 minhaConta.adicionarSaldo(valor);
-                console.log(`✅ Sucesso! R$ ${valor.toFixed(2)} adicionados à sua carteira.`);
+                console.log(`Sucesso! R$ ${valor.toFixed(2)} adicionados à sua carteira.`);
                 console.log(`Novo saldo: R$ ${minhaConta.getSaldo().toFixed(2)}`);
             }
             break;
@@ -77,9 +81,9 @@ while (rodando) {
             const generoSelecionado = LojaView.renderizarSubmenuCategorias(repoJogos);
             
             if (generoSelecionado !== "") {
-                LojaView.exibirJogosDaCategoria(repoJogos.listarTodos(), generoSelecionado);
+ LojaView.exibirJogosDaCategoria(repoJogos.listarTodos(), generoSelecionado, promocaoAtiva);
 
-                const idItem = readline.question("Digite o ID do jogo ou DLC que deseja comprar (ou pressione Enter para voltar): ");
+        const idItem = readline.question("Digite o ID do jogo ou DLC que deseja comprar (Ou pressione ENTER para sair) ");
                 
                 if (idItem.trim() === "") {
                     console.log("\nVoltou ao menu principal.");
@@ -87,14 +91,21 @@ while (rodando) {
                     const itemDesejado = repoJogos.buscarPorId(idItem);
 
                     if (!itemDesejado) {
-                        console.log("\n❌ Item não encontrado na loja");
+                        console.log("\nItem não encontrado na loja");
                     } else {
                         try {
-                            minhaConta.comprarItens(itemDesejado);
-                            console.log(`\n✅ Sucesso! '${itemDesejado.getTitulo()}' adicionado à sua biblioteca.`);
+                            const precoFinal = itemDesejado.getPrecoFinal(promocaoAtiva);
+
+                            // Corrigido para adicionar os parênteses () no método toFixed
+                            console.log(`\nPreço original: R$ ${itemDesejado.calcularPrecoFinal().toFixed(2)}`);
+                            console.log(`Preço com desconto: R$ ${precoFinal.toFixed(2)}`);
+                            
+                            minhaConta.comprarItens(itemDesejado, promocaoAtiva);
+                            
+                            console.log(`\nSucesso! '${itemDesejado.getTitulo()}' adicionado à sua biblioteca.`);
                             repoContas.adicionar(minhaConta);
                         } catch (error: any) {
-                            console.log(`\n🔥 Erro na compra: ${error.message}`);
+                            console.log(`\nErro na compra: ${error.message}`);
                         }
                     }
                 }
@@ -123,7 +134,6 @@ while (rodando) {
                         minhaConta.reembolsarItem(idParaReembolso);
                         console.log("\n Reembolso aprovado! O valor integral foi estornado para o seu saldo");
                         console.log(`Novo saldo da carteira: R$ ${minhaConta.getSaldo().toFixed(2)}`);
-
                     } catch (error: any) {
                         console.log(`\n Falha no reembolso: ${error.message}`);
                     }

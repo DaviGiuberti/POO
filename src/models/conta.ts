@@ -1,6 +1,7 @@
 import { ItemDigital } from './ItemDigital.js';
 import { DLC } from './jogo.js';
-import { RegistroCompra, PoliticaReembolso } from '../services/PoliticaReembolso.js'; // Corrigido o './'
+import { RegistroCompra, PoliticaReembolso } from '../services/PoliticaReembolso.js'; 
+import { Promocao } from "../services/promocao.js"; 
 
 export class Conta {
   private biblioteca: RegistroCompra[] = [];
@@ -17,38 +18,29 @@ export class Conta {
     return this.id;
   }
 
-  public comprarItens(item: ItemDigital): void {
-    const jaPossui = this.biblioteca.some(c => c.item.getID() === item.getID());
-    if (jaPossui) {
-      throw new Error(`Você já possui o item '${item.getTitulo()}' na sua biblioteca!`);
-    }
-    
-    if (item instanceof DLC) {
-      const possuiJogoBase = this.biblioteca.some(
-        (compraSalva) => compraSalva.item.getID() === item.getIdJogoPrincipal(),
-      );
+public comprarItens(item: ItemDigital, promocao?: Promocao): void {
+    const precoCobrado = item.getPrecoFinal(promocao);
 
-      if (!possuiJogoBase) {
-        throw new Error(
-          `Compra bloqueada! Você precisa ter o jogo base para adquirir a DLC: ${item.getTitulo()}.`,
-        );
-      }
+    if (this.saldoCarteira < precoCobrado) {
+        throw new Error("Saldo insuficiente na carteira.");
     }
 
-    const valor = item.calcularPrecoFinal();
+    // Deduz o valor correto (com ou sem desconto) do saldo
+    this.saldoCarteira -= precoCobrado;
 
-    if (this.saldoCarteira < valor) {
-      throw new Error('Saldo insuficiente na carteira Steam!');
-    }
-
-    this.saldoCarteira -= valor;
-    // Corrigido: Agora guarda apenas o registro estruturado com a data de compra
-    this.biblioteca.push({ item, dataCompra: new Date() });
-    
+    // Registra a transação com o preço que foi pago de verdade
     this.historicoTransacoes.push(
-      `Comprou ${item.getTitulo()} por R$${valor.toFixed(2)} em ${new Date().toLocaleDateString()}`,
+        `Comprou ${item.getTitulo()} por R$${precoCobrado.toFixed(2)} em ${new Date().toLocaleDateString('pt-BR')}`
     );
-  }
+
+    // Cria o registro da compra para a biblioteca
+    const novaCompra: RegistroCompra = {
+        item: item,
+        dataCompra: new Date()
+    };
+
+    this.biblioteca.push(novaCompra);
+}
 
   public reembolsarItem(idItem: string): void {
     const indexCompra = this.biblioteca.findIndex(c => c.item.getID() === idItem);
