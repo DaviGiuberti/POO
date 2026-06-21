@@ -4,7 +4,8 @@ import { ItemDigital } from "../models/ItemDigital.js";
 import { IRepositorio } from "../repo/IRepositorio.js";
 import { Promocao } from "../services/promocao.js";
 
-export class LojaView { // toda apresentação da loja no termianl
+export class LojaView {
+    // toda apresentação da loja no termianl
     private static renderizarJogo(item: Jogo, itens: ItemDigital[], promocaoAtiva?: Promocao): void {
         const precoOriginal = item.calcularPrecoFinal();
         const precoFinal = item.getPrecoFinal(promocaoAtiva);

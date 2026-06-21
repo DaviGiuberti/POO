@@ -13,7 +13,8 @@ export function ehCategorizavel(item: ItemDigital): item is ItemDigital & Catego
 }
 
 // classe abstrata que define o molde para jogos e dlcs
-export abstract class ItemDigital { // abstract pq n pode criar itemdigital sem ser jogo ou dlc
+export abstract class ItemDigital {
+    // abstract pq n pode criar itemdigital sem ser jogo ou dlc
     constructor(
         protected readonly id: string, // encapsulamento
         protected titulo: string,
@@ -43,7 +44,6 @@ export abstract class ItemDigital { // abstract pq n pode criar itemdigital sem 
 
         return precoComDesconto < 0 ? 0 : precoComDesconto;
     }
-
 
     public getID(): string {
         return this.id;

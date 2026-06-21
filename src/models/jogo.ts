@@ -3,8 +3,8 @@ import { ItemDigitalDTO } from "./dtos.js";
 
 // Esse arquivo define as classes de Jogo e DLC, filhas de ItemDigital, e a função itemFromDTO que reconstrói um item a partir de um DTO.
 
-
-export class Jogo extends ItemDigital implements Categorizavel { // herança de item digital e implementação da interface Categorizavel
+export class Jogo extends ItemDigital implements Categorizavel {
+    // herança de item digital e implementação da interface Categorizavel
     // um Jogo agrega as DLCs que o complementam.
     private dlcs: DLC[] = [];
 
@@ -56,7 +56,8 @@ export class Jogo extends ItemDigital implements Categorizavel { // herança de 
 }
 
 // classe DLC é um item digital que complementa um jogo, com desconto fixo de 10%
-export class DLC extends ItemDigital { // herança de item digital
+export class DLC extends ItemDigital {
+    // herança de item digital
     // desconto fixo de 10% para DLCs, que são complementos de jogos
     public static readonly DESCONTO_COMPLEMENTO = 0.1;
 
@@ -93,7 +94,7 @@ export class DLC extends ItemDigital { // herança de item digital
     }
 }
 
-// função de fábrica que reconstrói um item digital (Jogo ou DLC) a partir de um DTO, usando o campo "tipo" para determinar qual classe instanciar. 
+// função de fábrica que reconstrói um item digital (Jogo ou DLC) a partir de um DTO, usando o campo "tipo" para determinar qual classe instanciar.
 export function itemFromDTO(dto: ItemDigitalDTO): ItemDigital {
     const tipo = dto.tipo ?? (dto.idJogoPrincipal != null ? "DLC" : "Jogo");
 

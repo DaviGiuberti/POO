@@ -2,7 +2,8 @@ import { ehCategorizavel, ItemDigital } from "../models/ItemDigital.js";
 
 // este arquivo define as classes de promoção, que representam as promoções ativas na loja
 
-export abstract class Promocao { // classe abstrata, não pode ser instanciada diretamente
+export abstract class Promocao {
+    // classe abstrata, não pode ser instanciada diretamente
     constructor(protected nome: string) {}
 
     getNome(): string {
@@ -37,7 +38,8 @@ export class DescontoPorCategoria extends Promocao {
         super(nome);
     }
 
-    calcularDesconto(item: ItemDigital): number { // o desconto só é aplicado se o item for categorizável e pertencer à categoria alvo da promoção
+    calcularDesconto(item: ItemDigital): number {
+        // o desconto só é aplicado se o item for categorizável e pertencer à categoria alvo da promoção
         if (ehCategorizavel(item) && item.getGenero() === this.categoriaAlvo) {
             return item.calcularPrecoFinal() * (this.percentual / 100);
         }

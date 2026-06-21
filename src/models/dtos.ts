@@ -1,9 +1,6 @@
 // define a interface de dados DTO para salvar em JSON
 // servem para "ver" campos privados das entidades, para não ter q ficar acessando privates (A infraestrutura não pode ver os campos privados da entidade)
 
-
-
-
 // DTO para os itens digitais (jogos e dlcs)
 export interface ItemDigitalDTO {
     tipo: "Jogo" | "DLC";

@@ -21,7 +21,8 @@ describe("Casos de uso (com injeção de repositórios em memória)", () => {
         repoItens.adicionar(new DLC("MA-01-D1", "DLC", 30, "MA-01"));
     });
 
-    it("ComprarItem aplica a promoção e persiste a conta", () => { // Fluxo A passo 4-7
+    it("ComprarItem aplica a promoção e persiste a conta", () => {
+        // Fluxo A passo 4-7
         const uc = new ComprarItem(repoContas, repoItens);
         const resultado = uc.executar("u1", "MA-01", promo);
 
@@ -31,12 +32,14 @@ describe("Casos de uso (com injeção de repositórios em memória)", () => {
         expect(repoContas.buscarPorId("u1")!.getBiblioteca()).toHaveLength(1);
     });
 
-    it("ComprarItem propaga erro de item inexistente", () => { // Fluxo A - passo 5
+    it("ComprarItem propaga erro de item inexistente", () => {
+        // Fluxo A - passo 5
         const uc = new ComprarItem(repoContas, repoItens);
         expect(() => uc.executar("u1", "NAO-EXISTE", promo)).toThrow(/não encontrado/i);
     });
 
-    it("ReembolsarItem estorna o valor pago", () => { // Fluxo B - passo 2-5
+    it("ReembolsarItem estorna o valor pago", () => {
+        // Fluxo B - passo 2-5
         new ComprarItem(repoContas, repoItens).executar("u1", "MA-01", promo);
         const resultado = new ReembolsarItem(repoContas).executar("u1", "MA-01");
 
@@ -45,13 +48,15 @@ describe("Casos de uso (com injeção de repositórios em memória)", () => {
         expect(resultado.saldoAtual).toBe(250);
     });
 
-    it("AdicionarSaldo credita e persiste", () => { // Fluxo C - passo 2-4
+    it("AdicionarSaldo credita e persiste", () => {
+        // Fluxo C - passo 2-4
         const novoSaldo = new AdicionarSaldo(repoContas).executar("u1", 100);
         expect(novoSaldo).toBe(350);
         expect(repoContas.buscarPorId("u1")!.getSaldo()).toBe(350);
     });
 
-    it("AdicionarSaldo valida valor inválido", () => { // Fluxo C
+    it("AdicionarSaldo valida valor inválido", () => {
+        // Fluxo C
         expect(() => new AdicionarSaldo(repoContas).executar("u1", -5)).toThrow(/maior que zero/i);
     });
 });

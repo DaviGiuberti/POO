@@ -6,7 +6,8 @@ import { ContaDTO } from "../models/dtos.js";
 
 // esse arequivo existe para que o save do usuario seja salvo entre execuções
 
-export class RepositorioContaJSON implements IRepositorio<Conta> { // implementa a interface e grava e le arquivo dados_conta.json
+export class RepositorioContaJSON implements IRepositorio<Conta> {
+    // implementa a interface e grava e le arquivo dados_conta.json
     private caminhoArquivo: string;
 
     constructor(caminhoArquivo?: string) {

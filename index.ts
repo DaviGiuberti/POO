@@ -35,7 +35,6 @@ const comprarItem = new ComprarItem(repoContas, repoJogos);
 const reembolsarItem = new ReembolsarItem(repoContas);
 const adicionarSaldo = new AdicionarSaldo(repoContas);
 
-
 console.log(" ======== INICIALIZANDO SIMULADOR STEAM ========\n");
 // enche a loja com alguns jogos e dlcs de teste em "infra"
 popularLojaDeTestes(repoJogos);
@@ -77,12 +76,13 @@ while (rodando) {
             break;
         }
 
-        case "2": { 
+        case "2": {
             console.log("\n ======== MINHA BIBLIOTECA ========");
             const biblioteca = minhaConta.getBiblioteca();
             if (biblioteca.length === 0) {
                 console.log("Sua biblioteca está vazia");
-            } else { // exibe a biblioteca do usuário com ID e título dos jogos
+            } else {
+                // exibe a biblioteca do usuário com ID e título dos jogos
                 biblioteca.forEach((jogo) => console.log(`- [ID: ${jogo.getID()}] ${jogo.getTitulo()}`));
                 console.log(`\nTotal de itens: ${biblioteca.length}`);
                 console.log(`Total gasto: R$ ${minhaConta.getTotalGasto().toFixed(2)}`);
@@ -113,7 +113,7 @@ while (rodando) {
         }
 
         case "4": {
-            console.log("\n ======== COMPRAR ITEM ========"); 
+            console.log("\n ======== COMPRAR ITEM ========");
             // exibe as categorias disponíveis e pergunta qual categoria o usuário quer explorar
             const generoSelecionado = LojaView.renderizarSubmenuCategorias(repoJogos);
             // se o usuário escolher uma categoria, exibe os jogos daquela categoria e pergunta qual jogo ele quer comprar (pelo ID)
@@ -124,10 +124,12 @@ while (rodando) {
                     "Digite o ID do jogo ou DLC que deseja comprar (Ou pressione ENTER para sair) "
                 );
 
-                if (idItem.trim() === "") { // se o usuário não digitar um ID, volta para o menu principal
+                if (idItem.trim() === "") {
+                    // se o usuário não digitar um ID, volta para o menu principal
                     console.log("\nVoltou ao menu principal.");
                 } else {
-                    try { // executa o caso de uso de comprar item, que pode lançar erros por saldo insuficiente, item não encontrado, etc.
+                    try {
+                        // executa o caso de uso de comprar item, que pode lançar erros por saldo insuficiente, item não encontrado, etc.
                         // o resultado da compra inclui o preço original, o preço pago, o cashback creditado e o saldo restante, que são exibidos para o usuário
                         const resultado = comprarItem.executar(ID_USUARIO, idItem.trim(), promocaoAtiva);
                         // depois de comprar, recarrega o perfil do usuário para atualizar o saldo e a biblioteca
@@ -143,7 +145,8 @@ while (rodando) {
                             `\nSucesso! '${resultado.item.getTitulo()}' adicionado à sua biblioteca.`
                         );
                         console.log(`Saldo restante: R$ ${resultado.saldoRestante.toFixed(2)}`);
-                    } catch (error: unknown) { // se der erro na compra, exibe a mensagem de erro (ex: saldo insuficiente, item não encontrado, etc.)
+                    } catch (error: unknown) {
+                        // se der erro na compra, exibe a mensagem de erro (ex: saldo insuficiente, item não encontrado, etc.)
                         console.log(`\nErro na compra: ${mensagemDeErro(error)}`);
                     }
                 }
@@ -151,7 +154,8 @@ while (rodando) {
             break;
         }
 
-        case "5": { // opção de solicitar reembolso de um item da biblioteca, que pode ser um jogo ou uma DLC
+        case "5": {
+            // opção de solicitar reembolso de um item da biblioteca, que pode ser um jogo ou uma DLC
             console.log("\n ======== SOLICITAR REEMBOLSO ========");
             // exibe os itens da biblioteca do usuário e pergunta qual item ele quer reembolsar (pelo ID)
             const biblioteca = minhaConta.getBiblioteca();
@@ -168,10 +172,12 @@ while (rodando) {
                     "\nDigite o ID do item que deseja devolver (ou Enter para voltar): "
                 );
 
-                if (idParaReembolso.trim() === "") { // se o usuário não digitar um ID, volta para o menu principal
+                if (idParaReembolso.trim() === "") {
+                    // se o usuário não digitar um ID, volta para o menu principal
                     console.log("\nVoltou ao menu principal.");
                 } else {
-                    try { // executa o caso de uso de reembolso, que pode lançar erros por item não encontrado, prazo de reembolso expirado, etc.
+                    try {
+                        // executa o caso de uso de reembolso, que pode lançar erros por item não encontrado, prazo de reembolso expirado, etc.
                         const resultado = reembolsarItem.executar(ID_USUARIO, idParaReembolso.trim());
                         minhaConta = repoContas.buscarPorId(ID_USUARIO)!;
                         console.log(

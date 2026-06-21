@@ -7,7 +7,6 @@ import { ContaDTO } from "./dtos.js";
 
 // esse arquivo representa a conta do usuario. Guarda saldo, biblioteca e histórico de transações e tem as regras de negócio para comprar e reembolsar itens
 
-
 export class Conta {
     private biblioteca: RegistroCompra[] = []; // encapsulamento: a biblioteca é um array de registros de compra, não exposto diretamente
     private historicoTransacoes: string[] = [];
@@ -20,7 +19,6 @@ export class Conta {
 
         private plano: PlanoAssinatura = new PlanoBasico() // parâmetro com valor padrão
     ) {
-
         if (!id || id.trim().length === 0) {
             throw new Error("Conta inválida: o ID não pode ser vazio.");
         }
@@ -47,8 +45,6 @@ export class Conta {
         return this.plano.nome();
     }
 
-
-
     // quando comrpa nao pode duplicado, dlc precisa do jogo, precisa ter saldo e credita o cashback
     // tambem registra a transacao, guarda o preco pago e o cashback e retorna o cashback creditado
     public comprarItens(item: ItemDigital, promocao?: Promocao): number {
@@ -57,7 +53,8 @@ export class Conta {
             throw new Error("Você já possui este item na sua biblioteca.");
         }
 
-        if (item instanceof DLC) { // Regra de negócio: para comprar uma DLC, o usuário precisa ter o jogo-base na biblioteca.
+        if (item instanceof DLC) {
+            // Regra de negócio: para comprar uma DLC, o usuário precisa ter o jogo-base na biblioteca.
             const possuiJogoBase = this.biblioteca.some((c) => c.item.getID() === item.getIdJogoPrincipal());
             if (!possuiJogoBase) {
                 throw new Error(
@@ -66,7 +63,7 @@ export class Conta {
             }
         }
 
-        const precoCobrado = item.getPrecoFinal(promocao);  // o preço final do item pode variar conforme promoções (polimorfismo: o item calcula seu próprio preço final com base no preço base e na promoção)
+        const precoCobrado = item.getPrecoFinal(promocao); // o preço final do item pode variar conforme promoções (polimorfismo: o item calcula seu próprio preço final com base no preço base e na promoção)
 
         if (this.saldoCarteira < precoCobrado) {
             throw new Error("Saldo insuficiente na carteira.");
@@ -77,7 +74,8 @@ export class Conta {
 
         this.saldoCarteira = this.saldoCarteira - precoCobrado + cashback;
 
-        this.historicoTransacoes.push( // registra a transação no histórico, incluindo o cashback se houver
+        this.historicoTransacoes.push(
+            // registra a transação no histórico, incluindo o cashback se houver
             `Comprou ${item.getTitulo()} por R$${precoCobrado.toFixed(2)} em ${new Date().toLocaleDateString("pt-BR")}` +
                 (cashback > 0 ? ` (cashback ${this.plano.nome()}: +R$${cashback.toFixed(2)})` : "")
         );
@@ -116,7 +114,8 @@ export class Conta {
 
         this.biblioteca.splice(indexCompra, 1);
 
-        this.historicoTransacoes.push( // registra a transação de reembolso no histórico, incluindo o valor estornado e a data
+        this.historicoTransacoes.push(
+            // registra a transação de reembolso no histórico, incluindo o valor estornado e a data
             `Reembolsou ${compra.item.getTitulo()} (+R$${valorEstorno.toFixed(2)}) em ${new Date().toLocaleDateString("pt-BR")}`
         );
     }
@@ -164,9 +163,9 @@ export class Conta {
         };
     }
 
-
     // reconstroi conta a partir de um DTO
-    public static fromDTO(dto: ContaDTO): Conta { // por ser metodo da propria classe, pode preencher campos privados
+    public static fromDTO(dto: ContaDTO): Conta {
+        // por ser metodo da propria classe, pode preencher campos privados
         const conta = new Conta(
             dto.id,
             dto.nomeUsuario,
