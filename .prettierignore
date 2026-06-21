@@ -1,0 +1,4 @@
+node_modules/
+dist/
+dados_conta.json
+package-lock.json

@@ -1,24 +1,31 @@
-import {ItemDigital} from "../models/ItemDigital.js"
+import { ItemDigital } from "../models/ItemDigital.js";
 
-export interface RegistroCompra {
-    item: ItemDigital; 
+// este arquivo define a classe PoliticaReembolso
+// checa se pode ser reembolsado com base na data da compra e no limite de dias para reembolso (que varia conforme o plano de assinatura do usuário)
+
+export interface RegistroCompra { // 
+    item: ItemDigital;
     dataCompra: Date;
+    precoPago: number;
+    cashbackCreditado?: number;
 }
 
 export class PoliticaReembolso {
-    private static readonly LIMITE_DIAS = 7;
+    // Janela padrão de reembolso (plano Básico). Planos superiores estendem este prazo.
+    public static readonly LIMITE_DIAS_PADRAO = 7;
 
-    /**
-     * lógica para validar se uma compra está elegível com base no tempo
-     * caso não esteja, solta um erro com o motivo
-     */
-    public static validarElegibilidade(compra: RegistroCompra): void {
-       const agora = new Date(); 
+    public static validarElegibilidade( // verifica se a compra é elegível para reembolso com base na data da compra e no limite de dias para reembolso
+        compra: RegistroCompra,
+        limiteDias: number = PoliticaReembolso.LIMITE_DIAS_PADRAO,
+        agora: Date = new Date()
+    ): void {
         const diferencaEmMilissegundos = agora.getTime() - compra.dataCompra.getTime();
         const diferencaEmDias = diferencaEmMilissegundos / (1000 * 60 * 60 * 24);
-        
-        if (diferencaEmDias > this.LIMITE_DIAS) {
-            throw new Error(`Reembolso negado! O prazo limite de ${this.LIMITE_DIAS} dias expirou. (comprado há ${Math.floor(diferencaEmDias)} dias)`);
+
+        if (diferencaEmDias > limiteDias) {
+            throw new Error(
+                `Reembolso negado! O prazo limite de ${limiteDias} dias expirou. (comprado há ${Math.floor(diferencaEmDias)} dias)`
+            );
         }
     }
 }

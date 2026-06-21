@@ -3,32 +3,12 @@
     "id": "u1",
     "nomeUsuario": "PauloCrot",
     "email": "pauloramoscrot1@gmail.com",
-    "saldoCarteira": 130,
-    "biblioteca": [
-      {
-        "item": {
-          "id": "MA-01",
-          "titulo": "Grand Theft Auto V",
-          "precoBase": 80,
-          "genero": "Mundo Aberto",
-          "dlcs": []
-        },
-        "dataCompra": "2026-06-10T22:14:47.276Z"
-      },
-      {
-        "item": {
-          "id": "MA-01",
-          "titulo": "Grand Theft Auto V",
-          "precoBase": 80,
-          "genero": "Mundo Aberto",
-          "dlcs": []
-        },
-        "dataCompra": "2026-06-11T16:29:03.039Z"
-      }
-    ],
+    "saldoCarteira": 350,
+    "plano": "Premium",
+    "biblioteca": [],
     "historicoTransacoes": [
-      "Comprou Grand Theft Auto V por R$80.00 em 10/06/2026",
-      "Comprou Grand Theft Auto V por R$40.00 em 11/06/2026"
+      "Comprou EA SPORTS FC 24 por R$150.00 em 17/06/2026",
+      "Reembolsou EA SPORTS FC 24 (+R$150.00) em 17/06/2026"
     ]
   }
 ]

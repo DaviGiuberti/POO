@@ -1,13 +1,32 @@
 {
   "name": "biblioteca-de-jogos",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "description": "Simulador de biblioteca de jogos digitais (inspirado na Steam) para a disciplina de POO.",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"{src,tests}/**/*.ts\" index.ts",
+    "format:check": "prettier --check \"{src,tests}/**/*.ts\" index.ts"
+  },
   "dependencies": {
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@types/node": "^25.9.2",
     "@types/readline-sync": "^1.4.8",
+    "@vitest/coverage-v8": "^4.1.9",
+    "eslint": "^9.39.4",
+    "prettier": "^3.8.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.61.1",
+    "vitest": "^4.1.9"
   }
 }

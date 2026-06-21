@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "types": ["node"], 
+    "types": ["node"],
     "moduleResolution": "node16",
-    "module": "node16", // 👈 Alterado aqui de commonjs para node16
+    "module": "node16",
     "outDir": "./dist",
     "target": "ES2022",
     "esModuleInterop": true,
@@ -12,5 +12,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true
-  }
+  },
+  "include": ["index.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "tests", "vitest.config.ts"]
 }

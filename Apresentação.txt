@@ -1,0 +1,92 @@
+Camada 4 - index /lojaview
+Camada 3 - IRepositorio / RepositorioEmMemoria / RepositorioJSON
+Camada 2 - ComprarItem / ReembolsarItem / AdicionarSaldo
+Camada 1 - Conta / ItemDigital / DLC / Promoção / Plano / Politica
+
+Entidades - src/models/ + src/models/planos/ + src/services/
+Casos de Uso - src/casos-de-uso/
+Adaptadores - src/repo/
+Borda - src/views/
+
+src/infra/ - que coloca os dados de teste
+tests/ - verifica que tudo funciona
+
+
+Quando rodamos, o que acontece?
+
+npm start
+
+executa index.ts
+Cria os repositórios
+Cria a promoção ativa
+Cria os casos de Uso injetando os repositórios
+popularLojaDeTestes(repoJogos) - enche a loja de jogos
+repoContas.buscarPorId("u1") - tenta carregar o save do disco, se não achar cria e da boas vindas, se não fala bem vindo de volta
+Mostra plano e promoção ativa
+Entra em loop
+
+
+
+Se eu compro
+
+index ->
+ComprarItem -> busca pela conta
+ComprarItem -> busca pelo jogo
+ComprarItem -> chama conta.comprarItens(item, promo), vê se ta duplicado, dlc, saldo, promoção, cashback, registra na biblioteca, histórico
+ComprarItem -> salva repoContas.adicionar(conta), grava no .JSON
+ComprarItem ->
+ResultadoCompra -> index.ts imprime preço, cashback, saldo
+
+
+npm install   # só na primeira vez (instala as dependências em node_modules/)
+npm start     # compila (tsc) e roda o menu interativo no terminal
+
+
+
+Fluxo A — Comprar um item (opção 4)
+Arquivos envolvidos: index.ts → LojaView → ComprarItem → Conta →
+ItemDigital/Promocao/Plano → RepositorioContaJSON.
+
+1. index.ts: LojaView.renderizarSubmenuCategorias → você escolhe a categoria
+2. index.ts: LojaView.exibirJogosDaCategoria → mostra jogos/DLCs com preços
+3. você digita o ID do item
+4. index.ts: comprarItem.executar("u1", id, promocaoAtiva)
+5. ComprarItem: busca conta (JSON) e item (memória)
+6. ComprarItem: conta.comprarItens(item, promo)
+      ├─ valida: não duplicado
+      ├─ valida: se DLC, exige o jogo-base na biblioteca
+      ├─ calcula preço final (item.getPrecoFinal(promo))
+      ├─ valida: saldo suficiente
+      ├─ credita cashback (plano.percentualCashback())
+      ├─ atualiza saldo, biblioteca e histórico
+      └─ devolve o cashback creditado
+7. ComprarItem: repoContas.adicionar(conta) → grava o JSON
+8. index.ts: imprime preço original, com desconto, cashback e saldo restante
+Entra: id da conta, id do item, promoção. Sai: ResultadoCompra (item, preços,
+cashback, saldo).
+
+Fluxo B — Reembolsar (opção 5)
+1. index.ts lista a biblioteca, você digita o ID
+2. reembolsarItem.executar("u1", id)
+3. ReembolsarItem: busca a conta, guarda saldoAntes
+4. conta.reembolsarItem(id)
+      ├─ acha a compra na biblioteca
+      ├─ PoliticaReembolso.validarElegibilidade(compra, plano.diasReembolso())
+      │     └─ se passou do prazo → lança erro (reembolso negado)
+      ├─ estorna (precoPago − cashbackCreditado) ao saldo
+      ├─ remove o item da biblioteca
+      └─ registra no histórico
+5. ReembolsarItem: persiste e devolve {tituloItem, valorEstornado, saldoAtual}
+Detalhe esperto: o estorno desconta o cashback que tinha sido dado. Assim o saldo
+volta exatamente ao que era antes da compra — sem o usuário "lucrar" comprando e devolvendo.
+
+Fluxo C — Adicionar saldo (opção 3)
+1. você digita o valor
+2. adicionarSaldo.executar("u1", valor)
+3. busca conta → conta.adicionarSaldo(valor) (valida valor > 0) → persiste
+4. devolve o novo saldo
+
+
+
+
+Explica um pouco melhor DTO

@@ -1,99 +1,105 @@
-import { ItemDigital } from "./ItemDigital.js";
-import { RepositorioEmMemoria } from "../repo/RepositorioEmMemoria.js";
+import { Categorizavel, ItemDigital } from "./ItemDigital.js";
+import { ItemDigitalDTO } from "./dtos.js";
 
-export class Jogo extends ItemDigital {
+// Esse arquivo define as classes de Jogo e DLC, filhas de ItemDigital, e a função itemFromDTO que reconstrói um item a partir de um DTO.
+
+
+export class Jogo extends ItemDigital implements Categorizavel { // herança de item digital e implementação da interface Categorizavel
+    // um Jogo agrega as DLCs que o complementam.
     private dlcs: DLC[] = [];
 
     constructor(
-        id: string, 
-        titulo: string, 
-        precoBase: number, 
-        private genero: string // Mantido private, mas criamos o método de acesso abaixo
+        id: string,
+        titulo: string,
+        precoBase: number,
+        private genero: string
     ) {
+        // chama o construtor da superclasse ItemDigital para inicializar id, titulo e precoBase
         super(id, titulo, precoBase);
+        // jogo precisa ter genero
+        if (!genero || genero.trim().length === 0) {
+            throw new Error("Jogo inválido: o gênero não pode ser vazio.");
+        }
     }
-
+    // adiciona uma DLC ao jogo, que será usada para calcular o preço da edição completa
     public adicionarDLC(dlc: DLC): void {
         this.dlcs.push(dlc);
     }
-
-    // Método de acesso essencial para o menu por tópicos funcionar sem quebrar
+    // retorna uma cópia do array de DLCs
+    public getDLCs(): DLC[] {
+        return [...this.dlcs];
+    }
+    // implementa o método da interface Categorizavel, retornando o gênero do jogo
     public getGenero(): string {
         return this.genero;
     }
 
-    // Implementação de polimorfismo
+    // polimorfismo: o preço final de um jogo é o preço base, já dlc tem desconto de complemento
     public calcularPrecoFinal(): number {
-        // Retorna o preço base cheio por enquanto
         return this.precoBase;
+    }
+
+    // calcula o preço da edição completa do jogo, somando o preço base do jogo com o preço final de todas as DLCs associadas
+    public calcularPrecoEdicaoCompleta(): number {
+        return this.dlcs.reduce((total, dlc) => total + dlc.calcularPrecoFinal(), this.precoBase);
+    }
+    // converte o jogo em um DTO, incluindo o gênero e o tipo "Jogo"
+    public toDTO(): ItemDigitalDTO {
+        return {
+            tipo: "Jogo",
+            id: this.id,
+            titulo: this.titulo,
+            precoBase: this.precoBase,
+            genero: this.genero,
+        };
     }
 }
 
-export class DLC extends ItemDigital {
+// classe DLC é um item digital que complementa um jogo, com desconto fixo de 10%
+export class DLC extends ItemDigital { // herança de item digital
+    // desconto fixo de 10% para DLCs, que são complementos de jogos
+    public static readonly DESCONTO_COMPLEMENTO = 0.1;
+
     constructor(
-        id: string, 
-        titulo: string, 
-        precoBase: number, 
+        id: string,
+        titulo: string,
+        precoBase: number,
         private idJogoPrincipal: string
     ) {
         super(id, titulo, precoBase);
+
+        if (!idJogoPrincipal || idJogoPrincipal.trim().length === 0) {
+            throw new Error("DLC inválida: é obrigatório referenciar o jogo-base.");
+        }
     }
 
     public getIdJogoPrincipal(): string {
         return this.idJogoPrincipal;
     }
 
-    // Corrigido: Agora a DLC cobra o preço real dela em vez de multiplicar por zero!
+    // o preço final de uma DLC é o preço base com um desconto de complemento, que é uma porcentagem fixa do preço base
     public calcularPrecoFinal(): number {
-        return this.precoBase;
+        return this.precoBase * (1 - DLC.DESCONTO_COMPLEMENTO);
+    }
+
+    public toDTO(): ItemDigitalDTO {
+        return {
+            tipo: "DLC",
+            id: this.id,
+            titulo: this.titulo,
+            precoBase: this.precoBase,
+            idJogoPrincipal: this.idJogoPrincipal,
+        };
     }
 }
 
-// --- FUNÇÃO DE SEEDING (POPULAR O BANCO) ---
-export function popularLojaDeTestes(repoJogos: RepositorioEmMemoria<ItemDigital>): void {
-    // 📂 Categoria: Mundo Aberto / Ação (Prefixo: MA)
-    repoJogos.adicionar(new Jogo("MA-01", "Grand Theft Auto V", 80.00, "Mundo Aberto"));
-    repoJogos.adicionar(new DLC("MA-01-D1", "GTA Online: Pacote de Dinheiro Tubarao", 30.00, "MA-01"));
-    
-    repoJogos.adicionar(new Jogo("MA-02", "Cyberpunk 2077", 199.90, "Mundo Aberto"));
-    repoJogos.adicionar(new DLC("MA-02-D1", "DLC Phantom Liberty", 99.90, "MA-02"));
-    
-    repoJogos.adicionar(new Jogo("MA-03", "Elden Ring", 229.00, "Mundo Aberto"));
-    repoJogos.adicionar(new DLC("MA-03-D1", "DLC Shadow of the Erdtree", 154.00, "MA-03"));
-    
-    repoJogos.adicionar(new Jogo("MA-04", "Resident Evil 4 Remake", 169.00, "Mundo Aberto"));
-    repoJogos.adicionar(new DLC("MA-04-D1", "DLC Separate Ways", 48.00, "MA-04"));
+// função de fábrica que reconstrói um item digital (Jogo ou DLC) a partir de um DTO, usando o campo "tipo" para determinar qual classe instanciar. 
+export function itemFromDTO(dto: ItemDigitalDTO): ItemDigital {
+    const tipo = dto.tipo ?? (dto.idJogoPrincipal != null ? "DLC" : "Jogo");
 
-    // 📂 Categoria: FPS / Tiro (Prefixo: FPS)
-    repoJogos.adicionar(new Jogo("FPS-01", "Valorant", 0.00, "FPS"));
-    repoJogos.adicionar(new DLC("FPS-01-D1", "Passe de Batalha: Colecao Saqueadora", 40.00, "FPS-01"));
-    
-    repoJogos.adicionar(new Jogo("FPS-02", "Counter-Strike 2", 0.00, "FPS"));
-    repoJogos.adicionar(new Jogo("FPS-03", "Call of Duty: Black Ops 6", 339.00, "FPS"));
-    repoJogos.adicionar(new Jogo("FPS-04", "Overwatch 2", 0.00, "FPS"));
+    if (tipo === "DLC") {
+        return new DLC(dto.id, dto.titulo, dto.precoBase, dto.idJogoPrincipal ?? "");
+    }
 
-    // 📂 Categoria: Esportes / Corrida (Prefixo: ESP)
-    repoJogos.adicionar(new Jogo("ESP-01", "Rocket League", 0.00, "Esportes"));
-    repoJogos.adicionar(new Jogo("ESP-02", "EA SPORTS FC 24", 150.00, "Esportes"));
-    
-    repoJogos.adicionar(new Jogo("ESP-03", "Forza Horizon 5", 249.00, "Esportes"));
-    repoJogos.adicionar(new DLC("ESP-03-D1", "DLC Pacote de Expansao Hot Wheels", 79.00, "ESP-03"));
-    
-    repoJogos.adicionar(new Jogo("ESP-04", "F1 24", 359.00, "Esportes"));
-
-    // 📂 Categoria: Estratégia (Prefixo: EST)
-    repoJogos.adicionar(new Jogo("EST-01", "Hearts of Iron IV", 80.00, "Estrategia"));
-    repoJogos.adicionar(new DLC("EST-01-D1", "DLC Trial of Allegiance", 40.00, "EST-01"));
-    
-    repoJogos.adicionar(new Jogo("EST-02", "Football Manager", 199.00, "Estrategia"));
-    repoJogos.adicionar(new Jogo("EST-03", "Age of Empires IV", 99.90, "Estrategia"));
-
-    // 📂 Categoria: Simulador (Prefixo: SIM)
-    repoJogos.adicionar(new Jogo("SIM-01", "Hand Simulator", 10.00, "Simulador"));
-    
-    repoJogos.adicionar(new Jogo("SIM-02", "The Sims 4", 0.00, "Simulador"));
-    repoJogos.adicionar(new DLC("SIM-02-D1", "DLC Rumo a Fama", 159.00, "SIM-02"));
-    
-    repoJogos.adicionar(new Jogo("SIM-02-D2", "DLC Estações", 159.00, "SIM-02")); // Exemplo de segunda DLC vinculada ao mesmo jogo
-    repoJogos.adicionar(new Jogo("SIM-03", "Minecraft", 149.00, "Simulador"));
+    return new Jogo(dto.id, dto.titulo, dto.precoBase, dto.genero ?? "Desconhecido");
 }
