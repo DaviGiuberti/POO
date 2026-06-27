@@ -11,7 +11,6 @@ export interface ResultadoCompra {
     saldoRestante: number;
 }
 
-
 // para comprar um item, precisa carregar a conta, recebe repositorios etc
 
 export class ComprarItem {
