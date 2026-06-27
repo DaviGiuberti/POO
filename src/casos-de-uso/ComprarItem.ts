@@ -11,14 +11,9 @@ export interface ResultadoCompra {
     saldoRestante: number;
 }
 
-/**
- * Caso de uso: comprar um item da loja.
- *
- * Orquestra a operação (carregar conta, executar a regra de domínio, persistir)
- * sem conhecer detalhes de UI ou de armazenamento — recebe os repositórios por
- * suas interfaces (injeção de dependência), de acordo com a Clean Architecture.
- * As regras de negócio permanecem na entidade `Conta`.
- */
+
+// para comprar um item, precisa carregar a conta, recebe repositorios etc
+
 export class ComprarItem {
     constructor(
         private readonly repoContas: IRepositorio<Conta>,

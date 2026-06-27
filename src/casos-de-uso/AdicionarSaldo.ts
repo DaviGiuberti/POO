@@ -1,10 +1,8 @@
 import { IRepositorio } from "../repo/IRepositorio.js";
 import { Conta } from "../models/conta.js";
 
-/**
- * Caso de uso: adicionar saldo à carteira da conta.
- * A validação (valor > 0) é responsabilidade do domínio (`Conta.adicionarSaldo`).
- */
+// Para adicionar saldo na conta, precisa ser > 0
+
 export class AdicionarSaldo {
     constructor(private readonly repoContas: IRepositorio<Conta>) {}
 

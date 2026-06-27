@@ -8,7 +8,8 @@ import { ContaDTO } from "./dtos.js";
 // esse arquivo representa a conta do usuario. Guarda saldo, biblioteca e histórico de transações e tem as regras de negócio para comprar e reembolsar itens
 
 export class Conta {
-    private biblioteca: RegistroCompra[] = []; // encapsulamento: a biblioteca é um array de registros de compra, não exposto diretamente
+    // encapsulamento: a biblioteca é um array de registros de compra, não exposto diretamente
+    private biblioteca: RegistroCompra[] = [];
     private historicoTransacoes: string[] = [];
 
     constructor(
@@ -16,8 +17,8 @@ export class Conta {
         private nomeUsuario: string,
         private email: string,
         private saldoCarteira: number,
-
-        private plano: PlanoAssinatura = new PlanoBasico() // parâmetro com valor padrão
+        // parâmetro com valor padrão
+        private plano: PlanoAssinatura = new PlanoBasico()
     ) {
         if (!id || id.trim().length === 0) {
             throw new Error("Conta inválida: o ID não pode ser vazio.");
@@ -90,12 +91,6 @@ export class Conta {
         return cashback;
     }
 
-    /**
-     * Reembolsa um item da biblioteca respeitando a janela de prazo do plano
-     * (Básico 7d, Plus 14d, Premium 21d). O estorno é exatamente o valor pago
-     * (precoPago) e o cashback recebido é revertido — assim o saldo volta ao
-     * estado anterior à compra, sem lucro indevido em promoções nem em cashback.
-     */
     // reembolsa. verifica se tem ele, o plano, pra saber quantos dias pode devolver e o cashback é revertido
     public reembolsarItem(idItem: string): void {
         const indexCompra = this.biblioteca.findIndex((c) => c.item.getID() === idItem);

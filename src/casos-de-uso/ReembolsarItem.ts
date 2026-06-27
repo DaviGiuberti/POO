@@ -7,11 +7,8 @@ export interface ResultadoReembolso {
     saldoAtual: number;
 }
 
-/**
- * Caso de uso: reembolsar um item da biblioteca.
- * A regra de prazo (7 dias) e o estorno vivem no domínio; aqui apenas
- * carregamos a conta, executamos e persistimos.
- */
+// Reembolso, procura conta, ve se tem o item, atualiza saldo, reembolsa. Aqui nao verificamos o prazo de 7 ou mais dias
+
 export class ReembolsarItem {
     constructor(private readonly repoContas: IRepositorio<Conta>) {}
 
