@@ -130,13 +130,3 @@ tests/                    → Testes automatizados (Vitest)
 
 O fluxo geral: **`index.ts` (menu)** → **casos de uso** → **entidades** (que aplicam
 as regras) → **repositório** (que salva no `dados_conta.json`).
-
----
-
-## ❗ Problemas comuns
-
-- **`'vitest'/'tsc' não é reconhecido como comando`** → você esqueceu o
-  `npm install`. Rode-o e tente de novo.
-- **O menu não aceita minha digitação** → rode pelo terminal de verdade
-  (PowerShell, CMD ou bash), não pelo console "somente leitura" de algumas IDEs.
-- **Quero zerar meu progresso** → apague o `dados_conta.json` (veja a seção da conta).
